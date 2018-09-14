@@ -18,5 +18,11 @@ Anyhow, if you really want to install plico as standalone package go on with pip
 pip install plico
 ```
 
+## Wish list
+
+   + Documentation (readthedocs or alike)
+   + Implement reconnect-to-devices in case of lost connection
+   + Implement service discovery 
+
 
 [tipico]: https://github.com/lbusoni/tipico
