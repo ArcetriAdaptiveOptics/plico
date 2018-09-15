@@ -4,3 +4,5 @@ python:
 install: pip install plico
 script:
   - pytest
+after_success:
+  - coveralls
