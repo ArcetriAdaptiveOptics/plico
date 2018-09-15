@@ -1,7 +1,9 @@
 language: python
 python:
   - "3.6"
-install: pip install plico
+install: 
+  - pip install plico
+  - pip install coveralls
 script:
   - pytest
 after_success:
