@@ -4,7 +4,7 @@ __version__= "$Id: zmq_ports.py 56 2018-09-14 16:42:15Z lbusoni $"
 
 
 
-class ZmqPortsAAA(object):
+class ZmqPorts(object):
 
     def __init__(self, hostname, basePort):
         self._hostname= hostname
