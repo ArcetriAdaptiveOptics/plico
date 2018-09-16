@@ -8,7 +8,7 @@ __version__ = "$Id: setup.py 56 2018-09-14 16:42:15Z lbusoni $"
 
 setup(name='plico',
       description='Python Laboratory Instrumentation COntrol',
-      version='0.13',
+      version='0.14',
       classifiers=['Development Status :: 4 - Beta',
                    'Operating System :: POSIX :: Linux',
                    'Programming Language :: Python :: 2.7',
