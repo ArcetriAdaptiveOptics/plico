@@ -1,6 +1,6 @@
 # PLICO: Python Laboratory Instrumentation COntrol
 
-| ![Build Status][travis] | ![Coverage Status][coveralls] | 
+| [![Build Status][travis]][travislink] | [![Coverage Status][coveralls]][coverallslink] | 
 
 
 plico is a framework to develop applications controlling instrumentation typically available in a scientific laboratory.
@@ -8,8 +8,10 @@ It is entirely written in Python and support server-client applications, using [
 
 
 [zmq]: http://zeromq.org
-[travis]: https://travis-ci.com/lbusoni/plico.svg?branch=master
-[coveralls]: https://coveralls.io/repos/github/lbusoni/plico/badge.svg?branch=master
+[travis]: https://travis-ci.com/lbusoni/plico.svg?branch=master "go to travis"
+[travislink]: https://travis-ci.com/lbusoni/plico
+[coveralls]: https://coveralls.io/repos/github/lbusoni/plico/badge.svg?branch=master "go to coveralls"
+[coverallslink]: https://coveralls.io/repos/github/lbusoni/plico
 
 
 ## Installation
