@@ -11,7 +11,7 @@ It is entirely written in Python and support server-client applications, using [
 [travis]: https://travis-ci.com/lbusoni/plico.svg?branch=master "go to travis"
 [travislink]: https://travis-ci.com/lbusoni/plico
 [coveralls]: https://coveralls.io/repos/github/lbusoni/plico/badge.svg?branch=master "go to coveralls"
-[coverallslink]: https://coveralls.io/repos/github/lbusoni/plico
+[coverallslink]: https://coveralls.io/github/lbusoni/plico
 
 
 ## Installation
