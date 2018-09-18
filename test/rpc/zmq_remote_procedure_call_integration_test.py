@@ -12,7 +12,6 @@ from plico.utils.logger import Logger
 from plico.rpc.zmq_remote_procedure_call import ZmqRemoteProcedureCall,\
     ZmqRpcTimeoutError
 
-__version__ = "$Id: zmq_remote_procedure_call_integration_test.py 56 2018-09-14 16:42:15Z lbusoni $"
 
 
 class MyException(Exception):
@@ -307,22 +306,6 @@ class ZmqRemoteProcedureCallTest(unittest.TestCase):
         self.assertGreaterEqual(b.getValue(), a.getValue())
 
 
-    def _testSubscriberGetLastValueWithoutCaching(self):
-        timeForSeveralPublisherCycles= MyPublisher.CYCLE_PERIOD * 10
-        cc= self._client.getLastCounterFromPublisher()
-        a= self._client.readFromPublisher().getValue()
-        delta1= a - cc
-        self._timeMod.sleep(timeForSeveralPublisherCycles)
-        cc= self._client.getLastCounterFromPublisher()
-        b= self._client.readFromPublisher().getValue()
-        delta2= b - cc
-        print("got a,b = %d,%d " % (a, b))
-        print("got d1,d2 = %d,%d " % (delta1, delta2))
-        self.assertGreaterEqual(delta1, 0, "got delta1 %d" % delta1)
-        self.assertGreaterEqual(delta2, 0, "got delta2 %d" % delta2)
-        self.assertGreater(
-            b, a + 1, "got a=%d, b=%d. Expected b-a about 10" % (a, b))
-
 
     def testMain(self):
         self._spawnServer()
@@ -332,7 +315,6 @@ class ZmqRemoteProcedureCallTest(unittest.TestCase):
         self._raiseOnClientSideIfServerRaises()
         self._testReturnObjectWithALogger()
         self._testPublisher()
-        self._testSubscriberGetLastValueWithoutCaching()
         self._wasSuccessful= True
 
 
