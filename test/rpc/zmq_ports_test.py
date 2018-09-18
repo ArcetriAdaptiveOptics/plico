@@ -2,7 +2,6 @@
 import unittest
 from plico.rpc.zmq_ports import ZmqPorts
 
-__version__ = "$Id:$"
 
 
 class ZmqPortsTest(unittest.TestCase):
