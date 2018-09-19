@@ -1,17 +1,21 @@
 # PLICO: Python Laboratory Instrumentation COntrol
 
-| [![Build Status][travis]][travislink] | [![Coverage Status][coveralls]][coverallslink] | 
+ [![Build Status][travis]][travislink]  [![Coverage Status][coveralls]][coverallslink] [![PyPI version][pypiversion]][pypiversionlink]
 
 
 plico is a framework to develop applications controlling instrumentation typically available in a scientific laboratory.
 It is entirely written in Python and support server-client applications, using [zeromq][zmq] as message dispatcher.
 
 
-[zmq]: http://zeromq.org
-[travis]: https://travis-ci.com/lbusoni/plico.svg?branch=master "go to travis"
-[travislink]: https://travis-ci.com/lbusoni/plico
-[coveralls]: https://coveralls.io/repos/github/lbusoni/plico/badge.svg?branch=master "go to coveralls"
-[coverallslink]: https://coveralls.io/github/lbusoni/plico
+
+A list of packages using plico:
+   1. [tipico][tipico] and [tipico-server][tipico-server] implements a typical application controlling a simulated instrument
+   1. [pysilico][pysilico] and [pysilico-server][pysilico-server] to control videocameras.
+
+
+
+
+
 
 
 ## Installation
@@ -28,6 +32,10 @@ Anyhow, if you really want to install plico as standalone package go on with pip
 pip install plico
 ```
 
+## Documentation
+Visit the wiki for the projects https://github.com/lbusoni/plico/wiki
+
+
 ## Wish list
 
    + Documentation (readthedocs or alike)
@@ -35,4 +43,16 @@ pip install plico
    + Implement service discovery 
 
 
+[zmq]: http://zeromq.org
+[plico]: https://github.com/lbusoni/plico
 [tipico]: https://github.com/lbusoni/tipico
+[tipico-server]: https://github.com/lbusoni/tipico_server
+[pysilico]: https://github.com/lbusoni/pysilico
+[pysilico-server]: https://github.com/lbusoni/pysilico_server
+[travis]: https://travis-ci.com/lbusoni/plico.svg?branch=master "go to travis"
+[travislink]: https://travis-ci.com/lbusoni/plico
+[coveralls]: https://coveralls.io/repos/github/lbusoni/plico/badge.svg?branch=master "go to coveralls"
+[coverallslink]: https://coveralls.io/github/lbusoni/plico
+[pypiversion]: https://badge.fury.io/py/plico.svg
+[pypiversionlink]: https://badge.fury.io/py/plico
+
