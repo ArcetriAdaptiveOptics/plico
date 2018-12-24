@@ -2,10 +2,30 @@ import numpy as np
 from math import factorial
 
 
-__version__ = "$Id: zernike_generator.py 56 2018-09-14 16:42:15Z lbusoni $"
 
 
 class ZernikeGenerator(object):
+    """ZernikeGenerator
+
+    A class to generate Zernike polynomials and gradient of Zernike
+    polynomials
+
+    Example:
+        >>> numberOfPixelOnPupilDiameter= 64
+        >>> zg= ZernikeGenerator(numberOfPixelOnPupilDiameter)
+        >>> asti= zg.getZernike(5)
+        >>> asti[
+        >>> type(asti)
+        numpy.ma.core.MaskedArray
+        >>> asti.shape
+        (64,64)
+        >>> dTiltdx= zg.getDerivativeX(2)
+        >>> dTiltdx.mean()
+        2.0
+        >>> dTiltdx.ptp()
+        0.0
+
+    """
 
     def __init__(self, nPixelOnDiameter):
         self._nPixel= nPixelOnDiameter
@@ -104,6 +124,18 @@ class ZernikeGenerator(object):
 
 
     def getZernike(self, index):
+        """getZernike
+
+        Retrieve a map representing the index-th Zernike polynomial
+
+        Args:
+            index (int): The index of Zernike map to be generated,
+                following Noll 1976 ordering.
+
+        Returns:
+            np.array: A map representing the index-th Zernike polynomial
+
+        """
         if index not in list(self._dictCache.keys()):
             self._dictCache[index]= self._polar(index, self._rhoMap,
                                                 self._thetaMap)
