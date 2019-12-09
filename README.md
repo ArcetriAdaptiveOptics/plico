@@ -36,11 +36,6 @@ pip install plico
 Visit the wiki for the projects https://github.com/lbusoni/plico/wiki
 
 
-## Wish list
-
-   + Documentation (readthedocs or alike)
-   + Implement reconnect-to-devices in case of lost connection
-   + Implement service discovery 
 
 
 [zmq]: http://zeromq.org
