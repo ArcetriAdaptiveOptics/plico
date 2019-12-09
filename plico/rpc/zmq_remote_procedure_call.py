@@ -11,8 +11,6 @@ from plico.rpc.abstract_remote_procedure_call import \
 
 
 
-__version__= "$Id: zmq_remote_procedure_call.py 56 2018-09-14 16:42:15Z lbusoni $"
-
 
 if sys.version_info[0] >= 3:
     pickle_options={'encoding': 'latin1'}

@@ -13,7 +13,9 @@ A list of packages using plico:
    1. [pysilico][pysilico] and [pysilico-server][pysilico-server] to control videocameras.
 
 
+## Documentation
 
+https://plico.readthedocs.io
 
 
 
