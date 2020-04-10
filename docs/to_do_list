@@ -1,0 +1,11 @@
+## Wish list
+
+   + Documentation (readthedocs or alike)
+   + Implement reconnect-to-devices in case of lost connection
+   + Implement service discovery 
+
+   
+## Server Info
+   + Add server config file name 
+   + Add step counter (remove it from snapshot)
+   + Add device infos

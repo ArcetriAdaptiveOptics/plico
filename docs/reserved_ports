@@ -1,0 +1,28 @@
+
+
+*** Ports ***
+
+10 ports reserved to each server:
+
+0: reply
+1: status
+2: publisher
+3: display
+4: future
+...
+9: future
+
+
+7000: palpao deformable mirror server 1
+7010: palpao deformable mirror server 2
+7020: palpao Process Monitor
+
+
+7100: pysilico camera server 1
+7110: pysilico camera server 2
+7120: pysilico Process Monitor
+
+60010: tipico1
+60020: tipico2
+
+

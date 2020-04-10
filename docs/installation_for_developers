@@ -1,0 +1,48 @@
+*** Build ***
+
+python setup.py bdist_wheel --universal
+
+*** List of requirements ***
+
+pipreqs .
+
+creates ./requirements.txt
+
+*** Local pip repository ***
+
+Have dist/plico, dist/palpao, dist/palpao-server under http server root 
+dir
+
+Install packages with 
+pip install --trusted-host 193.206.155.16 --extra-index-url http://193.206.155.16:8888/dist pysilico_server
+
+
+**** Install ALL for development ****
+
+On the machine on which code is developed it is easier to have devel installation
+
+
+pip install -e ./plico -e ./pymba-master -e ./pysilico -e ./pysilico_server -e ./tipico -e ./tipico_server -e ./palpao -e ./palpao_server
+
+
+With that, python setup.py test will use all local source code
+
+
+**** Uninstall ALL ****
+
+pip uninstall -y plico pysilico pysilico-server palpao palpao-server tipico tipico-server pymba
+
+
+
+**** Compile UI *****
+
+pyside2-uic camera_control_gui.ui -o camera_control_gui_ui.py; python -m Qt --convert camera_control_gui_ui.py
+
+
+*** FREEZING CODE ****
+
+https://cyrille.rossant.net/create-a-standalone-windows-installer-for-your-python-application/
+
+https://docs.python-guide.org/shipping/freezing/#freezing-your-code-ref
+
+
