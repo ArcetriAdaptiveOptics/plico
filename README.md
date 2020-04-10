@@ -1,6 +1,6 @@
 # PLICO: Python Laboratory Instrumentation COntrol
 
- [![Build Status][travis]][travislink]  [![Coverage Status][coveralls]][coverallslink] [![PyPI version][pypiversion]][pypiversionlink]
+ [![Build Status][travis]][travislink]  [![Coverage Status][coveralls]][coverallslink] [![Documentation Status](https://readthedocs.org/projects/plico/badge/?version=latest)](https://plico.readthedocs.io/en/latest/?badge=latest) [![PyPI version][pypiversion]][pypiversionlink]
 
 
 plico is a framework to develop applications controlling instrumentation typically available in a scientific laboratory.
@@ -9,8 +9,9 @@ It is entirely written in Python and support server-client applications, using [
 
 
 A list of packages using plico:
-   1. [tipico][tipico] and [tipico-server][tipico-server] implements a typical application controlling a simulated instrument
+   1. [tipico][tipico] and [tipico-server][tipico-server] implements a useless hardware-less typical application controlling a simulated instrument
    1. [pysilico][pysilico] and [pysilico-server][pysilico-server] to control videocameras.
+   1. [palpao][palpao] and [palpao-server][palpao-server] to control deformable mirrors
 
 
 ## Documentation
