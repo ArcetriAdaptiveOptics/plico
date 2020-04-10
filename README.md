@@ -48,8 +48,8 @@ Visit the wiki for the projects https://github.com/lbusoni/plico/wiki
 [pysilico-server]: https://github.com/ArcetriAdaptiveOptics/pysilico_server
 [travis]: https://travis-ci.com/ArcetriAdaptiveOptics/palpao.svg?branch=master "go to travis"
 [travislink]: https://travis-ci.com/ArcetriAdaptiveOptics/plico
-[coveralls]: https://coveralls.io/repos/github/lbusoni/plico/badge.svg?branch=master "go to coveralls"
-[coverallslink]: https://coveralls.io/github/lbusoni/plico
+[coveralls]: https://coveralls.io/repos/github/ArcetriAdaptiveOptics/plico/badge.svg?branch=master "go to coveralls"
+[coverallslink]: https://coveralls.io/github/ArcetriAdaptiveOptics/plico
 [pypiversion]: https://badge.fury.io/py/plico.svg
 [pypiversionlink]: https://badge.fury.io/py/plico
 
