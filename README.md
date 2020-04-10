@@ -41,13 +41,13 @@ Visit the wiki for the projects https://github.com/lbusoni/plico/wiki
 
 
 [zmq]: http://zeromq.org
-[plico]: https://github.com/lbusoni/plico
-[tipico]: https://github.com/lbusoni/tipico
-[tipico-server]: https://github.com/lbusoni/tipico_server
-[pysilico]: https://github.com/lbusoni/pysilico
-[pysilico-server]: https://github.com/lbusoni/pysilico_server
-[travis]: https://travis-ci.com/lbusoni/plico.svg?branch=master "go to travis"
-[travislink]: https://travis-ci.com/lbusoni/plico
+[plico]: https://github.com/ArcetriAdaptiveOptics/plico
+[tipico]: https://github.com/ArcetriAdaptiveOptics/tipico
+[tipico-server]: https://github.com/ArcetriAdaptiveOptics/tipico_server
+[pysilico]: https://github.com/ArcetriAdaptiveOptics/pysilico
+[pysilico-server]: https://github.com/ArcetriAdaptiveOptics/pysilico_server
+[travis]: https://travis-ci.com/ArcetriAdaptiveOptics/palpao.svg?branch=master "go to travis"
+[travislink]: https://travis-ci.com/ArcetriAdaptiveOptics/plico
 [coveralls]: https://coveralls.io/repos/github/lbusoni/plico/badge.svg?branch=master "go to coveralls"
 [coverallslink]: https://coveralls.io/github/lbusoni/plico
 [pypiversion]: https://badge.fury.io/py/plico.svg
