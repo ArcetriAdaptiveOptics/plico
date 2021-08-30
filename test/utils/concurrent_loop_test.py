@@ -222,7 +222,7 @@ class Test(unittest.TestCase):
                 elif r == 4:
                     self._loop.isClosed()
                 else:
-                    assert("Programming mistake" is None)
+                    raise ValueError("Programming mistake")
 
         stressers = []
         for _ in range(0, N_THREADS):
