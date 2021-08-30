@@ -13,7 +13,6 @@ AUTHOR = 'Lorenzo Busoni'
 LICENSE = 'MIT'
 KEYWORDS = 'laboratory, instrumentation control''laboratory, instrumentation control'
 
-
 here = os.path.abspath(os.path.dirname(__file__))
 # Load the package's __version__.py module as a dictionary.
 about = {}
@@ -87,7 +86,7 @@ setup(name=NAME,
                         "appdirs",
                         "pyzmq",
                         "futures",
-                        "pyfits",
+                        "astropy",
                         ],
       include_package_data=True,
       test_suite='test',
