@@ -19,11 +19,11 @@ class FakeOperatorLog(object):
 
     @synchronized("_mtx")
     @override
-    def onTruthSensorLoopFailure(self, message):
+    def onLoopFailure(self, message):
         self._logCnt += 1
 
     @synchronized("_mtx")
-    def getTruthSensorLoopFailureLogCount(self):
+    def getLoopFailureLogCount(self):
         return self._logCnt
 
 
@@ -43,7 +43,7 @@ class Test(unittest.TestCase):
         self.loop = ConcurrentLoop(
             "object under test",
             self.convergeable, self.interStepTimeSec,
-            self.operatorLog.onTruthSensorLoopFailure)
+            self.operatorLog.onLoopFailure)
 
     def buildInitializedLoop(self):
         self.buildUninitializedLoop()
@@ -145,7 +145,7 @@ class Test(unittest.TestCase):
         self.closeLoopAndWaitForStep()
         Poller(1).check(ExecutionProbe(
             lambda: self.assertTrue(
-                self.operatorLog.getTruthSensorLoopFailureLogCount() >= 1)))
+                self.operatorLog.getLoopFailureLogCount() >= 1)))
         self.loop.open()
 
     def test_performs_one_pass(self):
@@ -170,19 +170,19 @@ class Test(unittest.TestCase):
 
         self.loop.initialize()
         self.assertFalse(self.loop.isClosed())
-        Poller(2).check(ExecutionProbe(
+        Poller(4).check(ExecutionProbe(
             lambda: self.assertEqual(
                 truthSensorClosedLoopCnt,
                 self.convergeable.getConvergenceStepCount())))
 
-        Poller(2).check(ExecutionProbe(
+        Poller(4).check(ExecutionProbe(
             lambda: self.assertTrue(
                 self.convergeable.getConvergenceStepCount() >
                 truthSensorOpenLoopCnt)))
 
         self.loop.close()
 
-        Poller(2).check(ExecutionProbe(
+        Poller(4).check(ExecutionProbe(
             lambda: self.assertTrue(
                 truthSensorClosedLoopCnt <
                 self.convergeable.getConvergenceStepCount())))
