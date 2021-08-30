@@ -155,12 +155,11 @@ class TestHelper(object):
     @staticmethod
     def _terminateByUsingPid(process):
         starterPid = process.pid
-        if os.EX_OK == subprocess.call("kill -INT %d" % starterPid,
-                                       shell=True):
+        if subprocess.call("kill -INT %d" % starterPid, shell=True) == 0:
             try:
                 Poller(5).check(SubprocessTerminated(process, "<no name>"))
                 return
-            except:
+            except Exception:
                 pass
 
     @staticmethod
