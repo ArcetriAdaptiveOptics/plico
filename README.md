@@ -1,9 +1,10 @@
 # PLICO: Python Laboratory Instrumentation COntrol
 
  ![Python package](https://github.com/ArcetriAdaptiveOptics/plico/workflows/Python%20package/badge.svg)
- [![Coverage Status][coveralls]][coverallslink]
+ [![codecov](https://codecov.io/gh/ArcetriAdaptiveOptics/plico/branch/master/graph/badge.svg?token=04PRSBMW11)](https://codecov.io/gh/ArcetriAdaptiveOptics/plico)
  [![Documentation Status](https://readthedocs.org/projects/plico/badge/?version=latest)](https://plico.readthedocs.io/en/latest/?badge=latest)
  [![PyPI version][pypiversion]][pypiversionlink]
+
 
 
 plico is a framework to develop applications controlling instrumentation typically available in a scientific laboratory.
