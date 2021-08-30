@@ -12,6 +12,7 @@ import time
 import traceback
 import unittest
 from six import with_metaclass
+import psutil
 
 ENV_VAR_LONG_RUNNING_TESTS_ENABLE = "ENABLE_LONG_RUNNING_TESTS"
 XVFB_DEFAULT_DISPLAY = ":42"
@@ -155,12 +156,15 @@ class TestHelper(object):
     @staticmethod
     def _terminateByUsingPid(process):
         starterPid = process.pid
-        if subprocess.call("kill -INT %d" % starterPid, shell=True) == 0:
-            try:
-                Poller(5).check(SubprocessTerminated(process, "<no name>"))
-                return
-            except Exception:
-                pass
+#        if subprocess.call("kill -INT %d" % starterPid, shell=True) == 0:
+#            try:
+#                Poller(5).check(SubprocessTerminated(process, "<no name>"))
+#                return
+#            except Exception:
+#                pass
+        p = psutil.Process(starterPid)
+        p.kill()
+        p.wait(timeout=10)
 
     @staticmethod
     def dumpFileToStdout(filePath):
