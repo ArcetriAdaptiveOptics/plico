@@ -4,9 +4,6 @@ import inspect
 from six import with_metaclass
 
 
-__version__= "$Id: logger.py 25 2018-01-26 19:00:40Z lbusoni $"
-
-
 class LoggerException(Exception):
     pass
 
@@ -37,20 +34,20 @@ class AbstractLogger(with_metaclass(abc.ABCMeta, object)):
 class PythonLogger(AbstractLogger):
 
     def __init__(self, logger):
-        self._logger= logger
-        self._radix= ''
-
+        self._logger = logger
+        self._radix = ''
 
     def setRelativePathRadix(self, radix):
-        self._radix= radix
-
+        self._radix = radix
 
     def _getRelativeDirName(self, fullPath):
-        return os.path.relpath(fullPath, self._radix)
-
+        try:
+            return os.path.relpath(fullPath, self._radix)
+        except Exception:
+            return fullPath
 
     def _getCallerTrace(self):
-        stackCaller= inspect.stack()[3]
+        stackCaller = inspect.stack()[3]
         return '%s:%s' % (self._getRelativeDirName(stackCaller[1]),
                           stackCaller[2])
 
@@ -58,62 +55,56 @@ class PythonLogger(AbstractLogger):
         return '%s %s: %s' % (self._logger.name, self._getCallerTrace(), m)
 
     def fatal(self, m):
-        msg= self._formatMessage(m)
+        msg = self._formatMessage(m)
         self._logger.fatal(msg)
 
     def error(self, m):
-        msg= self._formatMessage(m)
+        msg = self._formatMessage(m)
         self._logger.error(msg)
 
     def warn(self, m):
-        msg= self._formatMessage(m)
+        msg = self._formatMessage(m)
         self._logger.warning(msg)
 
     def notice(self, m):
-        msg= self._formatMessage(m)
+        msg = self._formatMessage(m)
         self._logger.info(msg)
 
     def debug(self, m):
-        msg= self._formatMessage(m)
+        msg = self._formatMessage(m)
         self._logger.debug(msg)
 
 
 class ObservableLogger(AbstractLogger):
 
-
     def __init__(self, wrappedLogger):
-        self._wrappedLogger= wrappedLogger
-        self._listeners= []
+        self._wrappedLogger = wrappedLogger
+        self._listeners = []
 
     def fatal(self, m):
         for each in self._listeners:
             each.onFatal(m)
         self._wrappedLogger.fatal(m)
 
-
     def error(self, m):
         for each in self._listeners:
             each.onError(m)
         self._wrappedLogger.error(m)
-
 
     def warn(self, m):
         for each in self._listeners:
             each.onWarning(m)
         self._wrappedLogger.error(m)
 
-
     def notice(self, m):
         for each in self._listeners:
             each.onNotice(m)
         self._wrappedLogger.notice(m)
 
-
     def debug(self, m):
         for each in self._listeners:
             each.onDebug(m)
         self._wrappedLogger.debug(m)
-
 
     def addListener(self, listener):
         self._listeners.append(listener)
@@ -121,26 +112,20 @@ class ObservableLogger(AbstractLogger):
 
 class LoggerListener(object):
 
-
     def onDebug(self, message):
         self._methodOfPureAbstractClass()
-
 
     def onNotice(self, message):
         self._methodOfPureAbstractClass()
 
-
     def onWarning(self, message):
         self._methodOfPureAbstractClass()
-
 
     def onError(self, message):
         self._methodOfPureAbstractClass()
 
-
     def onFatal(self, message):
         self._methodOfPureAbstractClass()
-
 
     def _methodOfPureAbstractClass(self):
         assert False, "Pure abstract class method"
@@ -175,9 +160,9 @@ class PythonLoggerFactory(AbstractLoggerFactory):
     def getLogger(self, name):
         import logging
 
-        logger= logging.getLogger(name)
-        pyLogger= PythonLogger(logger)
-        radix= os.path.join(__file__, '..', '..')
+        logger = logging.getLogger(name)
+        pyLogger = PythonLogger(logger)
+        radix = os.path.join(__file__, '..', '..')
         pyLogger.setRelativePathRadix(radix)
         return pyLogger
 
@@ -191,51 +176,45 @@ class DummyLoggerFactory(AbstractLoggerFactory):
 class ObservableLoggerFactory(AbstractLoggerFactory):
 
     def __init__(self, wrappedLoggerFactory):
-        self._wrappedLoggerFactory= wrappedLoggerFactory
-        self._createdLoggerByName= {}
-        self._listeners= []
-
+        self._wrappedLoggerFactory = wrappedLoggerFactory
+        self._createdLoggerByName = {}
+        self._listeners = []
 
     def _registerListenersTo(self, logger):
         for each in self._listeners:
             logger.addListener(each)
 
-
     def getLogger(self, name):
         if name in list(self._createdLoggerByName.keys()):
             return self._createdLoggerByName[name]
 
-        wrappedLogger= self._wrappedLoggerFactory.getLogger(name)
-        logger= ObservableLogger(wrappedLogger)
-        self._createdLoggerByName[name]= logger
+        wrappedLogger = self._wrappedLoggerFactory.getLogger(name)
+        logger = ObservableLogger(wrappedLogger)
+        self._createdLoggerByName[name] = logger
 
         self._registerListenersTo(logger)
 
         return logger
 
-
     def getLoggerMap(self):
         return self._createdLoggerByName
-
 
     def addListener(self, loggerListener):
         self._listeners.append(loggerListener)
         for loggerName in self._createdLoggerByName:
-            logger= self._createdLoggerByName[loggerName]
+            logger = self._createdLoggerByName[loggerName]
             logger.addListener(loggerListener)
 
 
 class Logger(object):
 
-    DEFAULT_LOGGER_FACTORY= PythonLoggerFactory
-    _loggerFactory= DEFAULT_LOGGER_FACTORY()
-
+    DEFAULT_LOGGER_FACTORY = PythonLoggerFactory
+    _loggerFactory = DEFAULT_LOGGER_FACTORY()
 
     @staticmethod
     def of(loggerName):
         return Logger._loggerFactory.getLogger(loggerName)
 
-
     @staticmethod
     def setLoggerFactory(loggerFactory):
-        Logger._loggerFactory= loggerFactory
+        Logger._loggerFactory = loggerFactory
