@@ -5,7 +5,7 @@ import threading
 import time
 import unittest
 
-from test.test_helper import TestHelper, ExecutionProbe, Poller
+from test.test_helper import ExecutionProbe, Poller
 from plico.utils.decorator import synchronized, override
 from plico.utils.fake_convergeable import FakeConvergeable
 from plico.utils.concurrent_loop import ConcurrentLoopException, ConcurrentLoop
@@ -160,36 +160,25 @@ class Test(unittest.TestCase):
         self.convergeable.setAsUnconverged()
         self.assertFalse(self.loop.hasConverged())
 
-    def _print_counts(self):
-        print("cl/ol count %d/%d" % (
-            self.convergeable.getConvergenceStepCount(),
-            self.convergeable.getMeasureConvergenceCount()))
-
     def test_deinitialize_and_reinitialize_restarts_in_open_loop(self):
-        self._print_counts()
         self.closeLoopAndWaitForStep()
-        self._print_counts()
         self.loop.deinitialize()
-        self._print_counts()
         closedLoopCnt = \
             self.convergeable.getConvergenceStepCount()
         openLoopCnt = \
             self.convergeable.getMeasureConvergenceCount()
 
         self.loop.initialize()
-        self._print_counts()
         self.assertFalse(self.loop.isClosed())
         Poller(4).check(ExecutionProbe(
             lambda: self.assertEqual(
                 closedLoopCnt,
                 self.convergeable.getConvergenceStepCount())))
-        self._print_counts()
 
         Poller(4).check(ExecutionProbe(
             lambda: self.assertTrue(
-                self.convergeable.getConvergenceStepCount() >
+                self.convergeable.getMeasureConvergenceCount() >
                 openLoopCnt)))
-        self._print_counts()
 
         self.loop.close()
 
@@ -197,12 +186,10 @@ class Test(unittest.TestCase):
             lambda: self.assertTrue(
                 closedLoopCnt <
                 self.convergeable.getConvergenceStepCount())))
-        self._print_counts()
 
-    @TestHelper.longRunningTest
     def test_concurrent_stress(self):
-        N_THREADS = 50
-        N_ACTIONS_PER_THREAD = 10
+        N_THREADS = 500
+        N_ACTIONS_PER_THREAD = 100
         self.convergeable.setStepSleepDurationSec(0.0005)
 
         class Stresser(threading.Thread):
