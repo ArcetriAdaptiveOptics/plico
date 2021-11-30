@@ -11,36 +11,9 @@ plico is a framework to develop applications controlling instrumentation typical
 It is entirely written in Python and support server-client applications, using [zeromq][zmq] as message dispatcher.
 
 
-
-A list of packages using plico:
-   1. [tipico][tipico] and [tipico-server][tipico-server] implements a useless hardware-less typical application controlling a simulated instrument
-   1. [pysilico][pysilico] and [pysilico-server][pysilico-server] to control videocameras.
-   1. [palpao][palpao] and [palpao-server][palpao-server] to control deformable mirrors
-
-
 ## Documentation
 
 https://plico.readthedocs.io
-
-
-
-
-## Installation
-
-plico runs on Python 2.7+ and Python 3.3+. 
-
-It depends on zmq, numpy and pyfits (to store calibrations). You need a backend (PyQt4/PySide, PyQt5/PySide2) for GUIs.
-
-It is not very useful to install this package by itself. See [tipico][tipico] to install an example applications simulating some HW controller and a corresponding client. 
-
-Anyhow, if you really want to install plico as standalone package go on with pip:
-
-```
-pip install plico
-```
-
-## Documentation
-Visit the wiki for the projects https://github.com/lbusoni/plico/wiki
 
 
 
