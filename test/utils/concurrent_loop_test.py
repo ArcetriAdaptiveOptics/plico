@@ -233,7 +233,7 @@ class Test(unittest.TestCase):
 
         for each in stressers:
             each.join(10)
-            assert not each.isAlive()
+            assert not each.is_alive()
 
 
 if __name__ == "__main__":
