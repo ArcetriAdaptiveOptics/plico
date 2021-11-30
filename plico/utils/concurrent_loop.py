@@ -1,11 +1,7 @@
-
-
 import threading
 from plico.utils.logger import Logger
 from plico.utils.decorator import override, synchronized, returns
 from plico.utils.loop import Loop
-
-__version__ = "$Id: concurrent_loop.py 25 2018-01-26 19:00:40Z lbusoni $"
 
 
 class WorkerThread(threading.Thread):
@@ -145,10 +141,10 @@ class ConcurrentLoop(Loop):
     def _startWorkerThread(self):
         assert self._worker is None
         self._worker = WorkerThread("Worker thread for %s" % self.name(),
-                                   self.isClosed, self._convergable,
-                                   self._interStepTimeSec,
-                                   self._stepCounter,
-                                   self._logFailureFunc)
+                                    self.isClosed, self._convergable,
+                                    self._interStepTimeSec,
+                                    self._stepCounter,
+                                    self._logFailureFunc)
         self._worker.setStopDurationLimitSec(self._stopDurationLimitSec)
         self._worker.start()
         self._logger.notice("Worker thread is started.")

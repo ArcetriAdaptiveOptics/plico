@@ -160,32 +160,44 @@ class Test(unittest.TestCase):
         self.convergeable.setAsUnconverged()
         self.assertFalse(self.loop.hasConverged())
 
+    def _print_counts(self):
+        print("cl/ol count %d/%d" % (
+            self.convergeable.getConvergenceStepCount(),
+            self.convergeable.getMeasureConvergenceCount()))
+
     def test_deinitialize_and_reinitialize_restarts_in_open_loop(self):
+        self._print_counts()
         self.closeLoopAndWaitForStep()
+        self._print_counts()
         self.loop.deinitialize()
-        truthSensorClosedLoopCnt = \
+        self._print_counts()
+        closedLoopCnt = \
             self.convergeable.getConvergenceStepCount()
-        truthSensorOpenLoopCnt = \
+        openLoopCnt = \
             self.convergeable.getMeasureConvergenceCount()
 
         self.loop.initialize()
+        self._print_counts()
         self.assertFalse(self.loop.isClosed())
         Poller(4).check(ExecutionProbe(
             lambda: self.assertEqual(
-                truthSensorClosedLoopCnt,
+                closedLoopCnt,
                 self.convergeable.getConvergenceStepCount())))
+        self._print_counts()
 
         Poller(4).check(ExecutionProbe(
             lambda: self.assertTrue(
                 self.convergeable.getConvergenceStepCount() >
-                truthSensorOpenLoopCnt)))
+                openLoopCnt)))
+        self._print_counts()
 
         self.loop.close()
 
         Poller(4).check(ExecutionProbe(
             lambda: self.assertTrue(
-                truthSensorClosedLoopCnt <
+                closedLoopCnt <
                 self.convergeable.getConvergenceStepCount())))
+        self._print_counts()
 
     @TestHelper.longRunningTest
     def test_concurrent_stress(self):
