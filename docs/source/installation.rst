@@ -1,7 +1,7 @@
 Installation
 ============
 
-plico is tested on Python (2.7)/3.6+ on ubuntu, mac, windows. 
+plico is tested on Python (2.7)/3.8+ on ubuntu, mac, windows. 
 
 It depends on zmq, numpy and pyfits (to store calibrations). You need a backend (PyQt4/PySide, PyQt5/PySide2, guietta) for GUIs.
 
