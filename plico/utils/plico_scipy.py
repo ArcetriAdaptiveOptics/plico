@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 
-
 import threading
 lock = threading.Lock()
-
-__version__= "$Id$"
 
 
 def minimize(*args, **kwargs):

@@ -347,10 +347,10 @@ class SuccessfullShellCommandProbe(Probe):
         self._command = command
 
     def probe(self):
-        self._exitCode = os.system(self._command)
+        self._exitCode = subprocess.call(self._command, shell=True)
 
     def isSatisfied(self):
-        return os.EX_OK == self._exitCode
+        return 0 == self._exitCode
 
     def errorMessage(self):
         return "Failed to run '%s'" % (self._command)
