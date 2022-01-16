@@ -27,6 +27,10 @@
 7210: plico_motor server 2
 7220: plico_motor process monitor
 
+7300: plico_interferometer server 1
+7310: plico_interferometer server 2
+7320: plico_interferometer process monitor
+
 
 60010: tipico1
 60020: tipico2
