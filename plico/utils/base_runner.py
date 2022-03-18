@@ -105,7 +105,7 @@ class BaseRunner(object):
         self._createConfiguration()
         self._setUpLogging(self._logFilePath())
         self._createZmqBasedRPC()
-        self._registrerHandlers()
+        self._registerHandlers()
         return self.run()
 
     def run(self):
@@ -151,7 +151,7 @@ class BaseRunner(object):
         except Exception:
             pass
 
-    def _registrerHandlers(self):
+    def _registerHandlers(self):
         self._registerHandlerForSigInt()
         self._registerHandlerForSigTerm()
         self._registerHandlerForSigKill()
