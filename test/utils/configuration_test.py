@@ -45,6 +45,13 @@ class ConfigurationTest(unittest.TestCase):
             1.23e-9,
             cfg.getValue('foo', 'a_float_value', getfloat=True))
 
+    def testNumberedSectionList(self):
+        cfg= Configuration()
+        cfg.load(self.CONF_FILE)
+        self.assertEqual(
+            ['pippo1', 'pippo2'],
+            cfg.numberedSectionList('pippo'))
+
 
 if __name__ == "__main__":
     unittest.main()

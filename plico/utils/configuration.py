@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import re
 import configparser
 import appdirs
 from pkg_resources import resource_filename
@@ -63,6 +64,11 @@ class Configuration(object):
 
     def logLevel(self, section):
         return self.getValue(section, 'log_level')
+
+
+    def numberedSectionList(self, prefix=''):
+        pattern = prefix+'\d+'
+        return list(filter(lambda x: re.search(pattern, x), self._cfg.sections()))
 
 
     def _assertSectionExists(self, section):
