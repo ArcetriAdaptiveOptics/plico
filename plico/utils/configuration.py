@@ -67,7 +67,7 @@ class Configuration(object):
 
 
     def numberedSectionList(self, prefix=''):
-        pattern = prefix+'\d+'
+        pattern = prefix+'\\d+'
         return list(filter(lambda x: re.search(pattern, x), self._cfg.sections()))
 
 
