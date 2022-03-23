@@ -42,7 +42,7 @@ class StarterScriptCreatorBase(object):
                 str(self._now())))
             text_file.write('export PYTHONPATH="%s":$PYTHONPATH\n' %
                             self._pythonPath)
-            text_file.write("%s '%s' '%s' %s\n" % (
+            text_file.write("%s '%s' \"%s\" %s\n" % (
                 command,
                 os.path.join(self._pythonPath, executableSrc),
                 self._configFileDest,
