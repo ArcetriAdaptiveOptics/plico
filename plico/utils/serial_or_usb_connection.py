@@ -5,6 +5,10 @@ Serial/USB connection dynamic lookup
 import serial.tools.list_ports
 
 
+class SerialOrUSBException(Exception):
+    pass
+
+
 class SerialOrUSBConnection:
 
     def __init__(self, comport=None, usb_serial_number=None):
@@ -42,10 +46,10 @@ class SerialOrUSBConnection:
 
         usbport = self.device_by_serial_number(self.usb_serial_number)
         if usbport:
-            return usbport:
+            return usbport
 
         errmsg = 'No COM port specified and/or USB serial number not found'
-        raise ConnectionException(errmsg)
+        raise SerialOrUSBException(errmsg)
 
     @staticmethod
     def device_by_serial_number(serial_number):

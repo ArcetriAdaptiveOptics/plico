@@ -30,10 +30,10 @@ class Reconnecting:
                            must be catched and cause a disconnection event.
                            By default only OSError is catched.
         '''
-        self._reconnectInfo = ReconnectInfo(connect_func, disconnect_func, exceptions_to_catch)
+        self._reconnectInfo = ReconnectInfo(connect_func, disconnect_func, exc_to_catch_list)
 
 
-def reconnect():
+def reconnect(method):
     '''
     Decorator to make sure that a method is executed
     after connecting to the device, and trigger
@@ -41,14 +41,14 @@ def reconnect():
 
     Any communication problem will raise a ConnectionException
     '''
-    def wrapped(method, *args, **kwargs):
+    def wrapped(*args, **kwargs):
         self = args[0]
         info = self._reconnectInfo
         try:
             if not info.connected:
                 info.connect_func()
                 info.connected = True
-            return method(self, *args, **kwargs)
+            return method(*args, **kwargs)
         except info.exceptions_to_catch as e:
             info.disconnect_func()
             info.connected = False
