@@ -38,3 +38,24 @@ class FaultTolerantControlLoop(ControlLoop):
 
     def _isAlive(self):
         return not self._steppable.isTerminated()
+
+
+class IntolerantControlLoop(ControlLoop):
+
+    def __init__(self,
+                 steppable,
+                 logger,
+                 timeModule=time,
+                 loopPeriodInSecond=1):
+        self._steppable= steppable
+        self._logger= logger
+        self._timeModule= timeModule
+        self._loopPeriodSec= loopPeriodInSecond
+
+    def start(self):
+        while self._isAlive():
+            self._steppable.step()
+            self._timeModule.sleep(self._loopPeriodSec)
+
+    def _isAlive(self):
+        return not self._steppable.isTerminated()
