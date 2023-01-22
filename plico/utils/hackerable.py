@@ -1,9 +1,6 @@
 from plico.utils.logger import Logger
 
 
-__version__= "$Id: hackerable.py 25 2018-01-26 19:00:40Z lbusoni $"
-
-
 class Hackerable(object):
 
     def __init__(self, logger=None):

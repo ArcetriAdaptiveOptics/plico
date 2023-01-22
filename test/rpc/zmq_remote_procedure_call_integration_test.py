@@ -200,7 +200,7 @@ class ZmqRemoteProcedureCallTest(unittest.TestCase):
     THIS_DIR= os.path.abspath(os.path.dirname(__file__))
     TEST_DIR= os.path.join(THIS_DIR, "./tmp/")
     LOG_DIR= os.path.join(TEST_DIR, "log")
-    SERVER_LOG_PATH= os.path.join(LOG_DIR, "server.log")
+    PROCESS_MONITOR_LOG_PATH= os.path.join(LOG_DIR, "server.log")
     PUBLISHER_LOG_PATH= os.path.join(LOG_DIR, "publisher.log")
 
 
@@ -245,7 +245,7 @@ class ZmqRemoteProcedureCallTest(unittest.TestCase):
 
     def _spawnServer(self):
         self._server= self._spawnProcess(MyServer.commandToSpawn,
-                                         self.SERVER_LOG_PATH,
+                                         self.PROCESS_MONITOR_LOG_PATH,
                                          MyServer.RUNNING_MESSAGE)
 
 
@@ -258,7 +258,7 @@ class ZmqRemoteProcedureCallTest(unittest.TestCase):
 
     def tearDown(self):
         print('tearingDown')
-        TestHelper.dumpFileToStdout(self.SERVER_LOG_PATH)
+        TestHelper.dumpFileToStdout(self.PROCESS_MONITOR_LOG_PATH)
         TestHelper.dumpFileToStdout(self.PUBLISHER_LOG_PATH)
 
         if self._server is not None:

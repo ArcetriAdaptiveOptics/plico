@@ -42,14 +42,6 @@ class WorkerThread(threading.Thread):
         if self._runEnabled:
             self._runEnabledCondition.wait(self._interStepTimeSec)
 
-    def _markAsClosed(self):
-        self._openEvent.clear()
-        self._closeEvent.set()
-
-    def _markAsOpen(self):
-        self._openEvent.set()
-        self._closeEvent.clear()
-
     def _step(self):
         if self._closedFunc():
             self._stepCounter.inc()
@@ -160,7 +152,8 @@ class ConcurrentLoop(Loop):
                 self._stepCounter.inc()
                 self._convergable.performOneConvergenceStep()
             else:
-                raise Exception("Loop is closed")
+                raise Exception(
+                    "Loop is closed, cannot execute performOnePass")
         else:
             self._logger.error("%s is not yet initialized" % self._name)
 #             raise Exception("%s is not yet initialized" % self._name)
