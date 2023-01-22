@@ -51,10 +51,10 @@ class WorkerThread(threading.Thread):
 
     def _flagAsDone(self):
         self._doneEvent.set()
-        assert self._doneEvent.isSet()
+        assert self._doneEvent.is_set()
 
     def _isDone(self):
-        return self._doneEvent.isSet()
+        return self._doneEvent.is_set()
 
     @synchronized("_runEnabledCondition")
     def _isRunEnabled(self):
@@ -63,7 +63,7 @@ class WorkerThread(threading.Thread):
     @synchronized("_runEnabledCondition")
     def _disableRun(self):
         self._runEnabled = False
-        self._runEnabledCondition.notifyAll()
+        self._runEnabledCondition.notify_all()
 
     def setStopDurationLimitSec(self, limitSec):
         self._stopDurationLimitSec = limitSec
