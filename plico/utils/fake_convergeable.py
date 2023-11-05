@@ -53,7 +53,7 @@ class FakeConvergeable(Convergeable):
 
     @synchronized("_condition")
     def unblockStep(self):
-        self._condition.notifyAll()
+        self._condition.notify_all()
         self._stepBlockingEnabled = False
 
     @synchronized("_condition")

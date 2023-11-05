@@ -7,6 +7,7 @@ from plico.utils.logger import LoggerException
 import types
 
 
+
 class ReturnTypeMismatchError(Exception):
     pass
 
@@ -137,6 +138,20 @@ def cacheResult(f):
 def override(f):
     return f
 
+def logFailureAndRaise(func):
+    
+    @wraps(func)
+    def wrappedMethod(self, *args, **kwds):
+        try:
+            return func(self, *args, **kwds)
+        except Exception as e:
+            traceback.print_exc()
+            self._logger.error("'%s' failed: %s" % (
+                func.__name__, str(e)))
+            raise(e)
+        
+    return wrappedMethod
+            
 
 def logFailureAndContinue(func):
 

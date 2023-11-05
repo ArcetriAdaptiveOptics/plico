@@ -215,9 +215,9 @@ class Test(unittest.TestCase):
                 elif r == 1:
                     self._loop.open()
                 elif r == 2:
-                    self._loop.setGain(7.0)
+                    self._loop.initialize()
                 elif r == 3:
-                    self._loop.getGain()
+                    self._loop.hasConverged()
                 elif r == 4:
                     self._loop.isClosed()
                 else:
