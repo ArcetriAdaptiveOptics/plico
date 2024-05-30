@@ -225,7 +225,11 @@ class TestHelper(object):
 
         assert result is not None
         if not result.wasSuccessful():
-            sys.exit(os.EX_SOFTWARE)
+            try:
+                sys.exit(os.EX_SOFTWARE)
+            except AttributeError:
+                # os.EX_SOFTWARE is not available on Windows
+                sys.exit(-1)
 
     @staticmethod
     def qtPoll(timeoutSec):

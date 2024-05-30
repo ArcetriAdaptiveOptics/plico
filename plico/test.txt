@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "<stdin>", line 3, in <module>
+ZeroDivisionError: division by zero
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<stdin>", line 6, in <module>
+KeyError
