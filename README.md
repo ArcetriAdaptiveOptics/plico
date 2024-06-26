@@ -1,6 +1,6 @@
 # PLICO: Python Laboratory Instrumentation COntrol
 
- ![Python package](https://github.com/ArcetriAdaptiveOptics/plico/workflows/Python%20package/badge.svg)
+ ![Python package](https://img.shields.io/github/actions/workflow/status/ArcetriAdaptiveOptics/plico/python-package.yml)
  [![codecov](https://codecov.io/gh/ArcetriAdaptiveOptics/plico/branch/master/graph/badge.svg?token=04PRSBMW11)](https://codecov.io/gh/ArcetriAdaptiveOptics/plico)
  [![Documentation Status](https://readthedocs.org/projects/plico/badge/?version=latest)](https://plico.readthedocs.io/en/latest/?badge=latest)
  [![PyPI version][pypiversion]][pypiversionlink]
