@@ -17,6 +17,10 @@ import psutil
 ENV_VAR_LONG_RUNNING_TESTS_ENABLE = "ENABLE_LONG_RUNNING_TESTS"
 XVFB_DEFAULT_DISPLAY = ":42"
 
+# Python < 3.11 on Windows missing os.EX_OK
+if not hasattr(os, 'EX_OK'):
+    os.EX_OK = 0
+
 
 class TestHelper(object):
 
