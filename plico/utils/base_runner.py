@@ -87,7 +87,11 @@ class BaseRunner(object):
             print(("\t%s /home/plico/.plico/plico.conf") %
                   programName, file=sys.stderr)
             print("\nargv was: %s" % str(argv))
-            sys.exit(os.EX_USAGE)
+            try:
+                sys.exit(os.EX_USAGE)
+            except AttributeError:
+                # os.EX_USAGE is not available on Windows
+                sys.exit(-1)
         print('argv: %s' % str(argv))
 
     def _parseCommandLine(self, argv):
