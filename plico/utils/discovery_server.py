@@ -1,7 +1,7 @@
 import json
 import time
 import socket
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 
 DISCOVER_PORT = 9999
 DISCOVER_COMMAND = 'DISCOVER'
@@ -83,7 +83,7 @@ class DiscoveryClient():
     def __init__(self):
         pass
 
-    def run(self, name=None, timeout_in_seconds=2):
+    def run(self, name=None, timeout_in_seconds=2, filter={}):
         '''
         Broadcast a discovery request and wait for server replies
         for up to <timeout_in_seconds>. If *name* is set,
@@ -91,6 +91,11 @@ class DiscoveryClient():
         it will return a list of discovered servers.
         Each server info is a ServerInfo instance.
         '''
+        allowed_filters = [x.name for x in fields(ServerInfo)]
+        for k in filter:
+            if not k in allowed_filters:
+                raise ValueError(f'Invalid filter keyword {k}')
+
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         sock.settimeout(timeout_in_seconds)
@@ -106,6 +111,8 @@ class DiscoveryClient():
             try:
                 data, addr = sock.recvfrom(1024)
                 server_info = ServerInfo(**json.loads(data.decode()))
+                if not all(getattr(server_info, k) == v for k, v in filter.items()):
+                    continue
                 discovered_servers.append(server_info)
                 if name is not None:
                     if server_info.name == name:
@@ -113,7 +120,10 @@ class DiscoveryClient():
             except socket.timeout:
                 pass
             if time.time() - start_time > timeout_in_seconds:
-                if name is None and len(discovered_servers) > 0:
-                    return discovered_servers
+                if name is None:
+                    if len(discovered_servers) > 0:
+                        return discovered_servers
+                    else:
+                        raise TimeoutError('No servers found')
                 else:
                     raise TimeoutError(f'No server with name {name} found')
