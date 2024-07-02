@@ -12,7 +12,8 @@ class LocalServerInfo():
     '''Description of a plico server running locally'''
     name: str
     port: int
-    deviceclass: str
+    server_type: str
+    device_class: str
 
 
 @dataclass
@@ -21,7 +22,8 @@ class ServerInfo():
     name: str
     host: str
     port: int
-    deviceclass: str
+    server_type: str
+    device_class: str
 
 
 class DiscoveryServer():
@@ -64,7 +66,7 @@ class DiscoveryServer():
                 assert isinstance(local_server_info, LocalServerInfo), \
                     'server_info must be an instance of the LocalServerInfo dataclass'
                 data = ServerInfo(host=self._myip(), **local_server_info.__dict__)
-                if data.deviceclass == '':
+                if data.device_class == '':
                     # device class not set yet, do not answer broadcast
                     continue
                 print('Sending:', data)

@@ -170,11 +170,16 @@ class BaseRunner(object):
     def _local_server_info(self):
         port = self._configuration.getValue(self.getConfigurationSection(), 'port', getint=True)
         name = self._configuration.getValue(self.getConfigurationSection(), 'name')
-        deviceclass = self._get_device_class_name()
-        return LocalServerInfo(name=name, port=port, deviceclass=deviceclass)
+        device_class = self._get_device_class_name()
+        server_type = self._get_server_type_name()
+        return LocalServerInfo(name=name, port=port, server_type=server_type, device_class=device_class)
 
     def _get_device_class_name(self):
         '''Override to set the device class name'''
+        return ''
+
+    def _get_server_type_name(self):
+        '''Override to set the server type'''
         return ''
 
     def _startDiscoveryServer(self):
