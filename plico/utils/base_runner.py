@@ -4,7 +4,9 @@ import logging.handlers
 import os
 import sys
 import signal
+import threading
 from plico.utils.configuration import Configuration
+from plico.utils.discovery_server import DiscoveryServer, LocalServerInfo
 from plico.rpc.zmq_remote_procedure_call import ZmqRemoteProcedureCall
 from plico.rpc.sockets import Sockets
 from plico.rpc.zmq_ports import ZmqPorts
@@ -19,6 +21,7 @@ class BaseRunner(object):
         self._configuration = INITIALIZED_LATER
         self._sockets = INITIALIZED_LATER
         self._argv = INITIALIZED_LATER
+        self._discoveryServer = DiscoveryServer()
 
     def _logRunning(self):
         self._logger.notice(self.RUNNING_MESSAGE)
@@ -110,7 +113,12 @@ class BaseRunner(object):
         self._setUpLogging(self._logFilePath())
         self._createZmqBasedRPC()
         self._registerHandlers()
-        return self.run()
+        self._startDiscoveryServer()
+        try:
+            exitcode = self.run()
+        finally:
+            self._stopDiscoveryServer()
+        return exitcode
 
     def run(self):
         pass
@@ -159,3 +167,16 @@ class BaseRunner(object):
         self._registerHandlerForSigInt()
         self._registerHandlerForSigTerm()
         self._registerHandlerForSigKill()
+
+    def _configureDiscoveryServer(self, server_type, device_class_name):
+        '''Call from derived classes when the server type and device class name is available'''
+        port = self._configuration.getValue(self.getConfigurationSection(), 'port', getint=True)
+        name = self._configuration.getValue(self.getConfigurationSection(), 'name')
+        info = LocalServerInfo(name=name, port=port, server_type=server_type, device_class=device_class_name)
+        self._discoveryServer.configure(info)
+
+    def _startDiscoveryServer(self):
+        threading.Thread(target=self._discoveryServer.run).start()
+
+    def _stopDiscoveryServer(self):
+        self._discoveryServer.die()
