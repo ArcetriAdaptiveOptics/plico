@@ -66,12 +66,16 @@ class DiscoveryServer():
             except BlockingIOError:
                 time.sleep(1)
                 continue
-            if DISCOVER_COMMAND in data.decode():
-                if not self._data:
-                    # Server not configured yet, do not answer broadcast
-                    continue
-                print('Sending:', self._data)
-                sock.sendto(json.dumps(self._data.__dict__).encode(), addr)
+            try:
+                if DISCOVER_COMMAND in data.decode():
+                    if not self._data:
+                        # Server not configured yet, do not answer broadcast
+                        continue
+                    print('Sending:', self._data)
+                    sock.sendto(json.dumps(self._data.__dict__).encode(), addr)
+            except UnicodeDecodeError:
+                # Random broadcasts sometimes throw this
+                pass
 
     def die(self):
         '''Stop the server loop'''
