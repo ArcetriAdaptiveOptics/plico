@@ -21,6 +21,7 @@ class BaseRunner(object):
         self._configuration = INITIALIZED_LATER
         self._sockets = INITIALIZED_LATER
         self._argv = INITIALIZED_LATER
+        self._discoveryServer = DiscoveryServer()
 
     def _logRunning(self):
         self._logger.notice(self.RUNNING_MESSAGE)
@@ -167,23 +168,14 @@ class BaseRunner(object):
         self._registerHandlerForSigTerm()
         self._registerHandlerForSigKill()
 
-    def _local_server_info(self):
+    def _configureDiscoveryServer(self, server_type, device_class_name):
+        '''Call from derived classes when the server type and device class name is available'''
         port = self._configuration.getValue(self.getConfigurationSection(), 'port', getint=True)
         name = self._configuration.getValue(self.getConfigurationSection(), 'name')
-        device_class = self._get_device_class_name()
-        server_type = self._get_server_type_name()
-        return LocalServerInfo(name=name, port=port, server_type=server_type, device_class=device_class)
-
-    def _get_device_class_name(self):
-        '''Override to set the device class name'''
-        return ''
-
-    def _get_server_type_name(self):
-        '''Override to set the server type'''
-        return ''
+        info = LocalServerInfo(name=name, port=port, server_type=server_type, device_class=device_class_name)
+        self._discoveryServer.configure(info)
 
     def _startDiscoveryServer(self):
-        self._discoveryServer = DiscoveryServer(self._local_server_info)
         threading.Thread(target=self._discoveryServer.run).start()
 
     def _stopDiscoveryServer(self):

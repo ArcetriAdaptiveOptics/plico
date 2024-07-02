@@ -32,13 +32,18 @@ class DiscoveryServer():
     Initialize with a dict containing the discovery info. As a minimun,
     it must contain a "name" key with the resource name.
     '''
-    def __init__(self, local_server_info_getter):
-        assert callable(local_server_info_getter)
-        self._local_server_info_getter = local_server_info_getter
+    def __init__(self):
+        self._data = None
         self._time_to_die = False
 
     def _myip(self):
         return socket.gethostbyname(socket.gethostname())
+
+    def configure(self, local_server_info):
+        '''Configure the information to be sent back to discover requests'''
+        assert isinstance(local_server_info, LocalServerInfo), \
+                    'server_info must be an instance of the LocalServerInfo dataclass'
+        self._data = ServerInfo(host=self._myip(), **local_server_info.__dict__)
 
     def run(self):
         '''Loop serving discovery requests.
@@ -62,15 +67,11 @@ class DiscoveryServer():
                 time.sleep(1)
                 continue
             if DISCOVER_COMMAND in data.decode():
-                local_server_info = self._local_server_info_getter()
-                assert isinstance(local_server_info, LocalServerInfo), \
-                    'server_info must be an instance of the LocalServerInfo dataclass'
-                data = ServerInfo(host=self._myip(), **local_server_info.__dict__)
-                if data.device_class == '':
-                    # device class not set yet, do not answer broadcast
+                if not self._data:
+                    # Server not configured yet, do not answer broadcast
                     continue
-                print('Sending:', data)
-                sock.sendto(json.dumps(data.__dict__).encode(), addr)
+                print('Sending:', self._data)
+                sock.sendto(json.dumps(self._data.__dict__).encode(), addr)
 
     def die(self):
         '''Stop the server loop'''
