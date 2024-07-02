@@ -113,8 +113,10 @@ class BaseRunner(object):
         self._createZmqBasedRPC()
         self._registerHandlers()
         self._startDiscoveryServer()
-        exitcode = self.run()
-        self._stopDiscoveryServer()
+        try:
+            exitcode = self.run()
+        finally:
+            self._stopDiscoveryServer()
         return exitcode
 
     def run(self):

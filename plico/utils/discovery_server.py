@@ -45,11 +45,17 @@ class DiscoveryServer():
         separate thread. Use the self.die() method to stop.
         '''
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+        if hasattr(socket, 'SO_REUSEPORT'):
+            # Linux
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+        else:
+            # Windows
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        sock.setblocking(False)
         sock.bind(('', DISCOVER_PORT))   # Listen for broadcasts
         while not self._time_to_die:
             try:
-                data, addr = sock.recvfrom(1024,socket.MSG_DONTWAIT)
+                data, addr = sock.recvfrom(1024)
             except BlockingIOError:
                 time.sleep(1)
                 continue
