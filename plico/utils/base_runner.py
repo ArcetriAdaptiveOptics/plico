@@ -4,7 +4,9 @@ import logging.handlers
 import os
 import sys
 import signal
+import threading
 from plico.utils.configuration import Configuration
+from plico.utils.discovery_server import DiscoveryServer, LocalServerInfo
 from plico.rpc.zmq_remote_procedure_call import ZmqRemoteProcedureCall
 from plico.rpc.sockets import Sockets
 from plico.rpc.zmq_ports import ZmqPorts
@@ -110,7 +112,10 @@ class BaseRunner(object):
         self._setUpLogging(self._logFilePath())
         self._createZmqBasedRPC()
         self._registerHandlers()
-        return self.run()
+        self._startDiscoveryServer()
+        exitcode = self.run()
+        self._stopDiscoveryServer()
+        return exitcode
 
     def run(self):
         pass
@@ -159,3 +164,20 @@ class BaseRunner(object):
         self._registerHandlerForSigInt()
         self._registerHandlerForSigTerm()
         self._registerHandlerForSigKill()
+
+    def _local_server_info(self):
+        port = self._configuration.getValue(self.getConfigurationSection(), 'port', getint=True)
+        name = self._configuration.getValue(self.getConfigurationSection(), 'name')
+        deviceclass = self._get_device_class_name()
+        return LocalServerInfo(name=name, port=port, deviceclass=deviceclass)
+
+    def _get_device_class_name(self):
+        '''Override to set the device class name'''
+        return ''
+
+    def _startDiscoveryServer(self):
+        self._discoveryServer = DiscoveryServer(self._local_server_info)
+        threading.Thread(target=self._discoveryServer.run).start()
+
+    def _stopDiscoveryServer(self):
+        self._discoveryServer.die()
