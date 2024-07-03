@@ -1,6 +1,7 @@
 import json
 import time
 import socket
+import logging
 from dataclasses import dataclass, fields
 
 DISCOVER_PORT = 9999
@@ -27,14 +28,14 @@ class ServerInfo():
 
 
 class DiscoveryServer():
-    '''UDP discovery server.
-
-    Initialize with a dict containing the discovery info. As a minimun,
-    it must contain a "name" key with the resource name.
-    '''
-    def __init__(self):
+    '''UDP discovery server.'''
+    def __init__(self, logger=None):
         self._data = None
         self._time_to_die = False
+        if logger:
+            self._logger = logger
+        else:
+            self._logger = logging.getLogger()
 
     def _myip(self):
         return socket.gethostbyname(socket.gethostname())
@@ -63,30 +64,32 @@ class DiscoveryServer():
         while not self._time_to_die:
             try:
                 data, addr = sock.recvfrom(1024)
-            except BlockingIOError:
-                time.sleep(1)
-                continue
-            try:
                 if DISCOVER_COMMAND in data.decode():
                     if not self._data:
                         # Server not configured yet, do not answer broadcast
                         continue
-                    print('Sending:', self._data)
+                    self._logger.info('Sending: %s', self._data)
                     sock.sendto(json.dumps(self._data.__dict__).encode(), addr)
+            except BlockingIOError:
+                time.sleep(1)
+                continue
             except UnicodeDecodeError:
-                # Random broadcasts sometimes throw this
+                # Random broadcasts sometimes cause decode() to raise this
                 pass
 
     def die(self):
-        '''Stop the server loop'''
+        '''Stop the server loop (if started in a different thread)'''
         self._time_to_die = True
 
 
 class DiscoveryClient():
     '''UDP discovery client'''
 
-    def __init__(self):
-        pass
+    def __init__(self, logger=None):
+        if logger:
+            self._logger = logger
+        else:
+            self._logger = logging.getLogger()
 
     def run(self, name=None, timeout_in_seconds=2, filter={}):
         '''
@@ -95,6 +98,8 @@ class DiscoveryClient():
         will return the server info for that specific name, otherwise
         it will return a list of discovered servers.
         Each server info is a ServerInfo instance.
+        Will raise a TimeoutError if no servers answer, or if
+        no server with the specified name answers.
         '''
         allowed_filters = [x.name for x in fields(ServerInfo)]
         for k in filter:
@@ -118,6 +123,7 @@ class DiscoveryClient():
                 server_info = ServerInfo(**json.loads(data.decode()))
                 if not all(getattr(server_info, k) == v for k, v in filter.items()):
                     continue
+                self._logger.info('Received: %s', server_info)
                 discovered_servers.append(server_info)
                 if name is not None:
                     if server_info.name == name:
