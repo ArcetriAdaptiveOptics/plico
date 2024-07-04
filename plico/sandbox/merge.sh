@@ -17,6 +17,7 @@ git init .
 echo "Empty readme" > README.md
 git add README.md
 git commit -m "First commit"
+git branch -m main
 
 cd ..
 for REPO in $OLDREPOS
@@ -24,7 +25,7 @@ do
     $OLDGIT clone $URLPREFIX/$REPO
     cd $REPO
     git filter-repo --to-subdirectory-filter $REPO
-    git branch -m main master
+    git branch -m master main
     pwd
     cd ../$NEWREPO
     git remote add $REPO ../$REPO
@@ -34,10 +35,10 @@ done
 cd $NEWREPO
 
 # Merge all masters
-git checkout master
+git checkout main
 for REPO in $OLDREPOS
 do
-    EDITOR=true git merge --allow-unrelated-histories $REPO/master
+    EDITOR=true git merge --allow-unrelated-histories $REPO/main
 done
 
 # Merge all others
