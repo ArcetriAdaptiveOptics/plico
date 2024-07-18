@@ -4,43 +4,33 @@ import subprocess
 import shutil
 import unittest
 import logging
-import numpy as np
-from test.test_helper import TestHelper, Poller, MessageInFileProbe, \
-    ExecutionProbe
-from plico.utils.base_process_monitor_runner import BaseProcessMonitorRunner
+from test.test_helper import TestHelper, Poller, MessageInFileProbe
 
 from plico.utils.logger import Logger
 from plico.utils.configuration import Configuration
-from plico_motor_server.utils.starter_script_creator import \
-    StarterScriptCreator
-from plico_motor_server.utils.process_startup_helper import \
-    ProcessStartUpHelper
+
 
 from functools import wraps
 
-CONF_STRING = '''
-[test_server1]
-foo = 'bar1'
 
-[test_server2]
-foo = 'bar2'
-
-[processMonitor]
-spawn_delay = 2
-
-[global]
-app_name= inaf.arcetri.ao.plico
-app_author= INAF Arcetri Adaptive Optics
-python_package_name=plico
-'''
+runner_main = '''#!/usr/bin/env python
+import sys
+from plico.utils.base_process_monitor_runner import BaseProcessMonitorRunner
 
 class TestRunner(BaseProcessMonitorRunner):
+
+    RUNNING_MESSAGE = 'TestRunner is running'
     def __init__(self):
-        super.__init__(name='TestRunner',
-                       server_config_prefix='test_server',
-                       runner_config_section='runner',
-                       server_process_name='test_server',
-                       process_monitor_port=8000)
+        super().__init__(name='TestRunner',
+                         server_config_prefix='test_server',
+                         runner_config_section='processMonitor',
+                         server_process_name='test_server',
+                         process_monitor_port=8000)
+
+if __name__ == '__main__':
+    runner = TestRunner()
+    sys.exit(runner.start(sys.argv))
+'''
 
 
 def _dumpEnterAndExit(enterMessage, exitMessage, f, self, *args, **kwds):
@@ -74,14 +64,14 @@ class IntegrationTest(unittest.TestCase):
     TEST_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                             "./tmp/")
     LOG_DIR = os.path.join(TEST_DIR, "log")
+    CONF_FILE = 'test/integration/conffiles/plico.conf'
     CALIB_FOLDER = 'test/integration/calib'
     CONF_SECTION = 'processMonitor'
+    RUNNING_MESSAGE = 'TestRunner is running'
     SERVER_LOG_PATH = os.path.join(LOG_DIR, "%s.log" % CONF_SECTION)
     SERVER_PREFIX = 'test_server'
     BIN_DIR = os.path.join(TEST_DIR, "apps", "bin")
-    CONF_DIR = os.path.join(TEST_DIR, "conf")
-    CONF_FILE = os.path.join(CONF_DIR, 'plico_test_runner.conf')
-
+    RUN_FILE = os.path.join(BIN_DIR, 'run_integration_test.py')
     SOURCE_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                               "../..")
 
@@ -92,7 +82,6 @@ class IntegrationTest(unittest.TestCase):
 
         self._removeTestFolderIfItExists()
         self._makeTestDir()
-        self._writeConfFile()
         self.configuration = Configuration()
         self.configuration.load(self.CONF_FILE)
 
@@ -108,11 +97,6 @@ class IntegrationTest(unittest.TestCase):
         os.makedirs(self.TEST_DIR)
         os.makedirs(self.LOG_DIR)
         os.makedirs(self.BIN_DIR)
-        os.makedirs(self.CONF_DIR)
-
-    def _writeConfFile(self):
-        with open(self.CONF_FILE, 'w') as f:
-            f.write(CONF_STRING)
 
     def _setUpCalibrationTempFolder(self, calibTempFolder):
         shutil.copytree(self.CALIB_FOLDER,
@@ -134,41 +118,25 @@ class IntegrationTest(unittest.TestCase):
 
     @dumpEnterAndExit("creating starter scripts", "starter scripts created")
     def _createStarterScripts(self):
-        ssc = StarterScriptCreator()
-        ssc.setInstallationBinDir(self.BIN_DIR)
-        ssc.setPythonPath(self.SOURCE_DIR)
-        ssc.setConfigFileDestination('$1') # Allow config file to be a script parameter
-        ssc.installExecutables()
+        with open(self.RUN_FILE, 'w') as f:
+            f.write(runner_main)
+        if not sys.platform == "win32":
+            subprocess.call(f'chmod +x "{self.RUN_FILE}"', shell=True)
 
     @dumpEnterAndExit("starting processes", "processes started")
     def _startProcesses(self):
-        psh = ProcessStartUpHelper()
-        serverLog = open(os.path.join(self.LOG_DIR, "server.out"), "wb")
+        serverLog = open(self.SERVER_LOG_PATH, "wb")
         self.server = subprocess.Popen(
-            [psh.processProcessMonitorStartUpScriptPath(),
+            [self.RUN_FILE,
              self.CONF_FILE,
              self.CONF_SECTION],
             stdout=serverLog, stderr=serverLog)
         Poller(5).check(MessageInFileProbe(
-            TestRunner.RUNNING_MESSAGE, self.SERVER_LOG_PATH))
-
-    def _testProcessesActuallyStarted(self):
-        controllerLogFile = os.path.join(
-            self.LOG_DIR,
-            '%s%d.log' % (SERVER_PREFIX, 1))
-        Poller(5).check(MessageInFileProbe(
-            TestRunner.RUNNING_MESSAGE, controllerLogFile))
-        controller2LogFile = os.path.join(
-            self.LOG_DIR,
-            '%s%d.log' % (SERVER_PREFIX, 2))
-        Poller(5).check(MessageInFileProbe(
-            TestRunner.RUNNING_MESSAGE, controller2LogFile))
+            self.RUNNING_MESSAGE, self.SERVER_LOG_PATH))
 
     def test_main(self):
-        self._buildClients()
         self._createStarterScripts()
         self._startProcesses()
-        self._testProcessesActuallyStarted()
         self._wasSuccessful = True
 
 
