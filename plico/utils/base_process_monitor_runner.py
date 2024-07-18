@@ -125,7 +125,7 @@ class BaseProcessMonitorRunner(BaseRunner):
         self._logRunning()
         while self._timeToDie is False:
             self._handleRequest()
-            time.sleep(1)
+            time.sleep(0.1)
         self._terminateAll()
 
     @override
