@@ -4,27 +4,22 @@ import subprocess
 import shutil
 import unittest
 import logging
-from test.test_helper import TestHelper, Poller, MessageInFileProbe
+from functools import wraps
 
+from test.test_helper import TestHelper, Poller, MessageInFileProbe
 from plico.utils.logger import Logger
 from plico.utils.configuration import Configuration
+from plico.utils.process_monitor_runner import RUNNING_MESSAGE
 
-
-from functools import wraps
 
 
 runner_main = '''#!/usr/bin/env python
 import sys
-from plico.utils.base_process_monitor_runner import BaseProcessMonitorRunner
-
-class TestRunner(BaseProcessMonitorRunner):
-
-    @classmethod
-    def server_process_name(cls):
-        return 'plico'
+from plico.utils.process_monitor_runner import ProcessMonitorRunner
 
 if __name__ == '__main__':
-    runner = TestRunner()
+    runner = ProcessMonitorRunner(server_process_name='plico',
+                                  runner_config_section='processMonitor')
     sys.exit(runner.start(sys.argv))
 '''
 
@@ -63,7 +58,7 @@ class IntegrationTest(unittest.TestCase):
     CONF_FILE = 'test/integration/conffiles/plico.conf'
     CALIB_FOLDER = 'test/integration/calib'
     CONF_SECTION = 'processMonitor'
-    RUNNING_MESSAGE = 'Monitor of plico processes is running'
+    RUNNING_MESSAGE = RUNNING_MESSAGE(server_name='plico')
     SERVER_LOG_PATH = os.path.join(LOG_DIR, "%s.log" % CONF_SECTION)
     SERVER_PREFIX = 'test_server'
     BIN_DIR = os.path.join(TEST_DIR, "apps", "bin")

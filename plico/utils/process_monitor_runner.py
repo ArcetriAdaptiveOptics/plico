@@ -5,7 +5,6 @@ import sys
 import signal
 import os
 import subprocess
-from abc import ABC, abstractmethod
 import psutil
 from plico.utils.base_runner import BaseRunner
 from plico.utils.decorator import override
@@ -13,24 +12,17 @@ from plico.utils.logger import Logger
 from plico.types.server_info import ServerInfo
 
 
-class BaseProcessMonitorRunner(BaseRunner, ABC):
+def RUNNING_MESSAGE(server_name):
+    '''Return a running message customized for the managed server name'''
+    return f'Monitor of {server_name} processes is running'
 
-    @classmethod
-    def RUNNING_MESSAGE(cls):
-        '''Returns a running message customized for the managed server name'''
-        return 'Monitor of ' + cls.server_process_name() + ' processes is running'
 
-    @classmethod
-    @abstractmethod
-    def server_process_name(cls):
-        '''Returns the managed server name.
-        Implemented in the class so that integration tests can read it
-        without having to instantiate a dummy instance'''
-        pass
+class ProcessMonitorRunner(BaseRunner):
 
-    def __init__(self, runner_config_section='processMonitor'):
+    def __init__(self, server_process_name, runner_config_section='processMonitor'):
         BaseRunner.__init__(self)
         self._my_config_section = runner_config_section
+        self._server_process_name = server_process_name
 
         INITIALIZED_LATER = None
         self._prefix = INITIALIZED_LATER
@@ -47,7 +39,7 @@ class BaseProcessMonitorRunner(BaseRunner, ABC):
             self._binFolder= None
 
     def _logRunning(self):
-        self._logger.notice(self.RUNNING_MESSAGE())
+        self._logger.notice(RUNNING_MESSAGE(self._server_process_name))
         sys.stdout.flush()
 
     def _setSignalIntHandler(self):
@@ -142,7 +134,7 @@ class BaseProcessMonitorRunner(BaseRunner, ABC):
 
         sections = self._configuration.numberedSectionList(prefix=self._prefix)
         for section in sections:
-            self._spawnController(self.server_process_name(), section)
+            self._spawnController(self._server_process_name, section)
             time.sleep(delay)
         self._replySocket = self.rpc().replySocket(port)
 
