@@ -12,6 +12,11 @@ from plico.utils.logger import Logger
 from plico.types.server_info import ServerInfo
 
 
+# Windows old versions
+if not hasattr(os, 'EX_OK'):
+    os.EX_OK = 0
+
+
 def RUNNING_MESSAGE(server_name):
     '''Return a running message customized for the managed server name'''
     return f'Monitor of {server_name} processes is running'
@@ -97,10 +102,10 @@ class ProcessMonitorRunner(BaseRunner):
         else:
             cmd= [name]
         cmd += [self._configuration._filename, section]
-        self._logger.notice("MirrorController cmd is %s" % cmd)
-        mirrorController= subprocess.Popen(cmd)
-        self._processes.append(mirrorController)
-        return mirrorController
+        self._logger.notice("controller cmd is %s" % cmd)
+        controller= subprocess.Popen(cmd)
+        self._processes.append(controller)
+        return controller
 
     def _setup(self):
         self._logger= Logger.of(self.name)
@@ -159,4 +164,3 @@ class ProcessMonitorRunner(BaseRunner):
     def terminate(self, signal, frame):
         self._logger.notice("Terminating..")
         self._terminateAll()
-
