@@ -19,9 +19,10 @@ from plico.utils.base_process_monitor_runner import BaseProcessMonitorRunner
 
 class TestRunner(BaseProcessMonitorRunner):
 
+    RUNNING_MESSAGE = 'Monitor of plico processes is running'
+
     def __init__(self):
-        super().__init__(name='TestRunner',
-                         server_config_prefix='test_server',
+        super().__init__(server_config_prefix='test_server',
                          runner_config_section='processMonitor',
                          server_process_name='test_server')
 
@@ -65,7 +66,7 @@ class IntegrationTest(unittest.TestCase):
     CONF_FILE = 'test/integration/conffiles/plico.conf'
     CALIB_FOLDER = 'test/integration/calib'
     CONF_SECTION = 'processMonitor'
-    RUNNING_MESSAGE = 'TestRunner is running'
+    RUNNING_MESSAGE = 'Monitor of plico processes is running'
     SERVER_LOG_PATH = os.path.join(LOG_DIR, "%s.log" % CONF_SECTION)
     SERVER_PREFIX = 'test_server'
     BIN_DIR = os.path.join(TEST_DIR, "apps", "bin")

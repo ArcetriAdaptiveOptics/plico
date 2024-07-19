@@ -14,18 +14,17 @@ from plico.types.server_info import ServerInfo
 
 class BaseProcessMonitorRunner(BaseRunner):
 
+    RUNNING_MESSAGE = 'Running as BaseProcessMonitorRunner, something is wrong'
 
-    def __init__(self, name, server_config_prefix, runner_config_section, server_process_name):
+    def __init__(self, runner_config_section, server_config_prefix,  server_process_name):
         BaseRunner.__init__(self)
 
-        self._name = name
         self._prefix = server_config_prefix
         self._my_config_section = runner_config_section
         self._server_process_name = server_process_name
         self._logger= None
         self._processes= []
         self._timeToDie= False
-        self._RUNNING_MESSAGE = f"{name} is running."
 
     def _determineInstalledBinaryDir(self):
         try:
@@ -36,7 +35,7 @@ class BaseProcessMonitorRunner(BaseRunner):
             self._binFolder= None
 
     def _logRunning(self):
-        self._logger.notice(self._RUNNING_MESSAGE)
+        self._logger.notice(self.RUNNING_MESSAGE)
         sys.stdout.flush()
 
     def _setSignalIntHandler(self):
@@ -100,9 +99,9 @@ class BaseProcessMonitorRunner(BaseRunner):
         return mirrorController
 
     def _setup(self):
-        self._logger= Logger.of(self._name)
+        self._logger= Logger.of(self.name)
         self._setSignalIntHandler()
-        self._logger.notice(f"Creating process {self._name}")
+        self._logger.notice(f"Creating process {self.name}")
         self._determineInstalledBinaryDir()
         sections = self._configuration.numberedSectionList(prefix=self._prefix)
         try:
