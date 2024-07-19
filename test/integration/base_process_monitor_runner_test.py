@@ -19,13 +19,11 @@ from plico.utils.base_process_monitor_runner import BaseProcessMonitorRunner
 
 class TestRunner(BaseProcessMonitorRunner):
 
-    RUNNING_MESSAGE = 'TestRunner is running'
     def __init__(self):
         super().__init__(name='TestRunner',
                          server_config_prefix='test_server',
                          runner_config_section='processMonitor',
-                         server_process_name='test_server',
-                         process_monitor_port=8000)
+                         server_process_name='test_server')
 
 if __name__ == '__main__':
     runner = TestRunner()

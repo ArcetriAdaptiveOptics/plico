@@ -15,13 +15,12 @@ from plico.types.server_info import ServerInfo
 class BaseProcessMonitorRunner(BaseRunner):
 
 
-    def __init__(self, name, server_config_prefix, runner_config_section, server_process_name, process_monitor_port):
+    def __init__(self, name, server_config_prefix, runner_config_section, server_process_name):
         BaseRunner.__init__(self)
 
         self._name = name
         self._prefix = server_config_prefix
         self._my_config_section = runner_config_section
-        self._my_port = process_monitor_port
         self._server_process_name = server_process_name
         self._logger= None
         self._processes= []
@@ -112,10 +111,18 @@ class BaseProcessMonitorRunner(BaseRunner):
         except KeyError as e:
             print(e)
             delay = 0
+
+        try:
+            port = self._configuration.getValue(self._my_config_section,
+                                                 'port', getint=True)
+        except KeyError:
+            self._logger.error('Key "port" missing from process monitor configuration')
+            raise
+
         for section in sections:
             self._spawnController(self._server_process_name, section)
             time.sleep(delay)
-        self._replySocket = self.rpc().replySocket(self._my_port)
+        self._replySocket = self.rpc().replySocket(port)
 
     def _handleRequest(self):
         '''Handler for serverInfo'''
