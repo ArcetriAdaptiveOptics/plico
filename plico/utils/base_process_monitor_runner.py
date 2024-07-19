@@ -5,6 +5,7 @@ import sys
 import signal
 import os
 import subprocess
+from abc import ABC, abstractmethod
 import psutil
 from plico.utils.base_runner import BaseRunner
 from plico.utils.decorator import override
@@ -12,17 +13,28 @@ from plico.utils.logger import Logger
 from plico.types.server_info import ServerInfo
 
 
-class BaseProcessMonitorRunner(BaseRunner):
+class BaseProcessMonitorRunner(BaseRunner, ABC):
 
-    RUNNING_MESSAGE = 'Running as BaseProcessMonitorRunner, something is wrong'
+    @classmethod
+    def RUNNING_MESSAGE(cls):
+        '''Returns a running message customized for the managed server name'''
+        return 'Monitor of ' + cls.server_process_name() + ' processes is running'
 
-    def __init__(self, runner_config_section, server_config_prefix,  server_process_name):
+    @classmethod
+    @abstractmethod
+    def server_process_name(cls):
+        '''Returns the managed server name.
+        Implemented in the class so that integration tests can read it
+        without having to instantiate a dummy instance'''
+        pass
+
+    def __init__(self, runner_config_section='processMonitor'):
         BaseRunner.__init__(self)
-
-        self._prefix = server_config_prefix
         self._my_config_section = runner_config_section
-        self._server_process_name = server_process_name
-        self._logger= None
+
+        INITIALIZED_LATER = None
+        self._prefix = INITIALIZED_LATER
+        self._logger= INITIALIZED_LATER
         self._processes= []
         self._timeToDie= False
 
@@ -35,7 +47,7 @@ class BaseProcessMonitorRunner(BaseRunner):
             self._binFolder= None
 
     def _logRunning(self):
-        self._logger.notice(self.RUNNING_MESSAGE)
+        self._logger.notice(self.RUNNING_MESSAGE())
         sys.stdout.flush()
 
     def _setSignalIntHandler(self):
@@ -103,14 +115,24 @@ class BaseProcessMonitorRunner(BaseRunner):
         self._setSignalIntHandler()
         self._logger.notice(f"Creating process {self.name}")
         self._determineInstalledBinaryDir()
-        sections = self._configuration.numberedSectionList(prefix=self._prefix)
+
+        # Get the prefix for servers in configuration file, mandatory
+        try:
+            self._prefix = self._configuration.getValue(self._my_config_section,
+                                                        'server_config_prefix')
+        except KeyError:
+            self._logger.error('Key "server_config_prefix" missing from process monitor configuration')
+            raise
+
+        # Get the spawn delay, default = 1 second
         try:
             delay = self._configuration.getValue(self._my_config_section,
                                                  'spawn_delay', getfloat=True)
-        except KeyError as e:
-            print(e)
-            delay = 0
+        except KeyError:
+            self._logger.warn('Key "spawn_delay" missing from process monitor configuration, using default delay = 1 second')
+            delay = 1
 
+        # Get the process monitor network port, mandatory
         try:
             port = self._configuration.getValue(self._my_config_section,
                                                  'port', getint=True)
@@ -118,8 +140,9 @@ class BaseProcessMonitorRunner(BaseRunner):
             self._logger.error('Key "port" missing from process monitor configuration')
             raise
 
+        sections = self._configuration.numberedSectionList(prefix=self._prefix)
         for section in sections:
-            self._spawnController(self._server_process_name, section)
+            self._spawnController(self.server_process_name(), section)
             time.sleep(delay)
         self._replySocket = self.rpc().replySocket(port)
 

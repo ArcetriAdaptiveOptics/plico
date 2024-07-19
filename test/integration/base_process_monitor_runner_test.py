@@ -19,12 +19,9 @@ from plico.utils.base_process_monitor_runner import BaseProcessMonitorRunner
 
 class TestRunner(BaseProcessMonitorRunner):
 
-    RUNNING_MESSAGE = 'Monitor of plico processes is running'
-
-    def __init__(self):
-        super().__init__(server_config_prefix='test_server',
-                         runner_config_section='processMonitor',
-                         server_process_name='test_server')
+    @classmethod
+    def server_process_name(cls):
+        return 'plico'
 
 if __name__ == '__main__':
     runner = TestRunner()
