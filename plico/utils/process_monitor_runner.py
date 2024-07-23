@@ -24,10 +24,13 @@ def RUNNING_MESSAGE(server_name):
 
 class ProcessMonitorRunner(BaseRunner):
 
-    def __init__(self, server_process_name, runner_config_section='processMonitor'):
+    def __init__(self, server_process_name,
+                       runner_config_section='processMonitor',
+                       default_server_config_prefix=None):
         BaseRunner.__init__(self)
         self._my_config_section = runner_config_section
         self._server_process_name = server_process_name
+        self._default_server_config_prefix = default_server_config_prefix
 
         INITIALIZED_LATER = None
         self._prefix = INITIALIZED_LATER
@@ -118,8 +121,12 @@ class ProcessMonitorRunner(BaseRunner):
             self._prefix = self._configuration.getValue(self._my_config_section,
                                                         'server_config_prefix')
         except KeyError:
-            self._logger.error('Key "server_config_prefix" missing from process monitor configuration')
-            raise
+            if not self._default_server_config_prefix:
+                self._logger.error('Key "server_config_prefix" missing from process monitor configuration'
+                                   ' and no default given')
+                raise
+            else:
+                self._prefix = self._default_server_config_prefix
 
         # Get the spawn delay, default = 1 second
         try:
