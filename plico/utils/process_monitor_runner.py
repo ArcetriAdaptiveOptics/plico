@@ -145,6 +145,10 @@ class ProcessMonitorRunner(BaseRunner):
             raise
 
         sections = self._configuration.numberedSectionList(prefix=self._prefix)
+
+        if len(sections) == 0:
+            self._logger.warn(f'No sections with prefix {self._prefix} defined!')
+
         for section in sections:
             self._spawnController(self._server_process_name, section)
             time.sleep(delay)
