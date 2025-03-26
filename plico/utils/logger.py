@@ -94,7 +94,7 @@ class ObservableLogger(AbstractLogger):
     def warn(self, m):
         for each in self._listeners:
             each.onWarning(m)
-        self._wrappedLogger.error(m)
+        self._wrappedLogger.warn(m)
 
     def notice(self, m):
         for each in self._listeners:
