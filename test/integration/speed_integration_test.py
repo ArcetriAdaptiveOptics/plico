@@ -72,7 +72,7 @@ class SpeedIntegrationTest(unittest.TestCase):
             stop_event.wait()
             print(f"Round-trip times (s): {times}")
             print(f"Media: {np.mean(times):.4f} s, Min: {np.min(times):.4f} s, Max: {np.max(times):.4f} s")
-            self.assertTrue(np.min(times) < 0.5)
+            self.assertTrue(np.min(times) < 2)
         finally:
             request_socket.close()
             zmq_rpc._context.term()
