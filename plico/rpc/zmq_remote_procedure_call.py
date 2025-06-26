@@ -26,6 +26,28 @@ class ZmqRemoteProcedureCall(AbstractRemoteProcedureCall):
         self._logger = Logger.of("ZmqRPC")
         self._timeMod = timeModule
 
+    def ipcAddress(self, name):
+        """Restituisce l'indirizzo IPC per il socket."""
+        return f"ipc:///tmp/{name}.sock"
+
+    @cacheResult
+    def replyIpcSocket(self, name):
+        """Crea un socket REP su IPC per il server."""
+        try:
+            socket = self._context.socket(zmq.REP)
+            socket.bind(self.ipcAddress(name))
+        except Exception as e:
+            newMsg = f"{str(e)} {self.ipcAddress(name)}"
+            raise (type(e))(newMsg)
+        return socket
+
+    @cacheResult
+    def requestIpcSocket(self, name):
+        """Crea un socket REQ su IPC per il client."""
+        socket = self._context.socket(zmq.REQ)
+        socket.connect(self.ipcAddress(name))
+        return socket
+
     @override
     @returnsNone
     def publishPickable(self, socket, pickableObject):
@@ -165,7 +187,7 @@ class ZmqRemoteProcedureCall(AbstractRemoteProcedureCall):
          - pickled argument list
         Reply is a pickled object
         '''
-        self._logger.debug("sending request %s %s" % (cmd, args))
+        self._logger.debug("sending request %s %s" % (cmd, self._safe_args_repr(args)))
         t0 = time.time()
         self._sendMultiPartWithBarrierTimeout(
             socket,
@@ -175,7 +197,7 @@ class ZmqRemoteProcedureCall(AbstractRemoteProcedureCall):
         toBeReturned = self.receiveWithTimeout(socket, timeout)
         retObj = pickle.loads(toBeReturned, **pickle_options)
         self._logger.debug("%s received %s in %.3fs" % (
-            cmd, str(retObj), time.time() - t0))
+            cmd, self._safe_args_repr(retObj), time.time() - t0))
         if isinstance(retObj, Exception):
             raise retObj
         else:
@@ -207,8 +229,7 @@ class ZmqRemoteProcedureCall(AbstractRemoteProcedureCall):
                     self._logger.notice('Request %s failed. Caught %s %s' %
                                         (method, type(err), str(err)))
                     self._sendAnswer(socket, err)
-                self._logger.debug("received request %s %s" %
-                                   (method, str(args)))
+                self._logger.debug("received request %s %s" % (method, self._safe_args_repr(args)))
                 try:
                     res = getattr(obj, method).__call__(*args)
                 except Exception as e:
@@ -228,3 +249,28 @@ class ZmqRemoteProcedureCall(AbstractRemoteProcedureCall):
         self._logger.debug("answering %s (pickle size: %d)" %
                            (str(answer), len(resPickled)))
         socket.send(resPickled, zmq.NOBLOCK)
+
+    def _safe_args_repr(self, args, maxlen=100):
+        """Restituisce una stringa leggibile per il log, evitando di stampare array grandi."""
+        try:
+            if isinstance(args, (list, tuple)):
+                if len(args) == 1 and hasattr(args[0], 'shape'):
+                    # Probabile numpy array
+                    arr = args[0]
+                    return f"<{type(arr).__name__} shape={getattr(arr, 'shape', '?')} dtype={getattr(arr, 'dtype', '?')} size={arr.size}>"
+                elif len(args) < 5 and all(isinstance(a, (int, float, str, bool)) for a in args):
+                    return str(args)
+                else:
+                    return f"<args of type {type(args).__name__} len={len(args)}>"
+            elif hasattr(args, 'shape'):
+                # numpy array o simile
+                return f"<{type(args).__name__} shape={getattr(args, 'shape', '?')} dtype={getattr(args, 'dtype', '?')} size={args.size}>"
+            elif isinstance(args, (int, float, str, bool)):
+                return str(args)
+            else:
+                s = str(args)
+                if len(s) > maxlen:
+                    return s[:maxlen] + "..."
+                return s
+        except Exception as e:
+            return f"<unprintable args: {e}>"

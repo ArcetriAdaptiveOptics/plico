@@ -1,9 +1,8 @@
 
-__version__ = "$Id: constants.py 56 2018-09-14 16:42:15Z lbusoni $"
-
+import pickle
 
 class Constants:
-    PICKLE_PROTOCOL= 2
+    PICKLE_PROTOCOL=  pickle.HIGHEST_PROTOCOL
     APP_NAME= "inaf.arcetri.ao.plico"
     APP_AUTHOR= "INAF Arcetri Adaptive Optics"
 
