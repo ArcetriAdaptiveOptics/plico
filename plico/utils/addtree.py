@@ -1,8 +1,6 @@
 import os
 import shutil
-
-
-__version__= "$Id: addtree.py 50 2018-04-26 21:42:20Z lbusoni $"
+import importlib.resources.abc
 
 
 def mkdirp(dirname):
@@ -12,32 +10,53 @@ def mkdirp(dirname):
 
 
 def addtree(src, dst, symlinks=False):
-    names = os.listdir(src)
+    """
+    Recurive copy of directories, both real and virtual (using importlib.resources).
+    If src is a string, it is treated as a path.
+    If src is a Path, it is treated as a Path object.
+    If src is a directory, it copies all files and subdirectories to dst.
+    If dst does not exist, it is created.
+    If dst exists, it will raise an error if there are conflicts.
+    If symlinks is True, it will copy symbolic links as links.
+    If symlinks is False, it will copy the files they point to."""
     mkdirp(dst)
     errors = []
-    for name in names:
-        srcname = os.path.join(src, name)
-        dstname = os.path.join(dst, name)
-        try:
-            if symlinks and os.path.islink(srcname):
-                linkto = os.readlink(srcname)
-                os.symlink(linkto, dstname)
-            elif os.path.isdir(srcname):
-                addtree(srcname, dstname, symlinks)
-            else:
-                shutil.copy2(srcname, dstname)
-            # XXX What about devices, sockets etc.?
-        except OSError as why:
-            errors.append((srcname, dstname, str(why)))
-        # catch the Error from the recursive copytree so that we can
-        # continue with other files
-        except shutil.Error as err:
-            errors.extend(err.args[0])
-    try:
-        shutil.copystat(src, dst)
-    except OSError as why:
-        # can't copy file access times on Windows
-        if why.winerror is None:
-            errors.extend((src, dst, str(why)))
+
+    # Se src è una stringa/path, converti in Path
+    if isinstance(src, str):
+        import pathlib
+
+        src = pathlib.Path(src)
+
+    # Se è una directory reale
+    if hasattr(src, "is_dir") and src.is_dir() and hasattr(src, "iterdir"):
+        for item in src.iterdir():
+            dstname = os.path.join(dst, item.name)
+            try:
+                if hasattr(item, "is_dir") and item.is_dir():
+                    addtree(item, dstname, symlinks)
+                else:
+                    with item.open("rb") as src_file, open(dstname, "wb") as dst_file:
+                        shutil.copyfileobj(src_file, dst_file)
+            except Exception as why:
+                errors.append((str(item), dstname, str(why)))
+    else:
+        # fallback: usa la vecchia logica per directory reali
+        names = os.listdir(src)
+        for name in names:
+            srcname = os.path.join(src, name)
+            dstname = os.path.join(dst, name)
+            try:
+                if symlinks and os.path.islink(srcname):
+                    linkto = os.readlink(srcname)
+                    os.symlink(linkto, dstname)
+                elif os.path.isdir(srcname):
+                    addtree(srcname, dstname, symlinks)
+                else:
+                    shutil.copy2(srcname, dstname)
+            except OSError as why:
+                errors.append((srcname, dstname, str(why)))
+            except shutil.Error as err:
+                errors.extend(err.args[0])
     if errors:
         raise shutil.Error(errors)
