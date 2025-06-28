@@ -1,5 +1,5 @@
 import appdirs
-from pkg_resources import Requirement, resource_filename
+import importlib.resources
 import shutil
 import os
 from plico.utils.addtree import mkdirp
@@ -19,9 +19,9 @@ class ConfigFileManager():
         return confPath
 
     def _getConfigFilePathInPackage(self):
-        return resource_filename(
-            Requirement(self._packageName),
-            "%s/conf/%s.conf" % (self._packageName, self._packageName))
+        conf_name = f"{self._packageName}.conf"
+        # File is in <package>/conf/<package>.conf
+        return importlib.resources.files(self._packageName).joinpath('conf', conf_name)
 
     def doesConfigFileExists(self):
         return os.path.isfile(self.getConfigFilePath())
@@ -32,4 +32,6 @@ class ConfigFileManager():
         source = self._getConfigFilePathInPackage()
         dest = self.getConfigFilePath()
         mkdirp(os.path.dirname(self.getConfigFilePath()))
-        shutil.copyfile(source, dest)
+        # importlib.resources.files returns a pathlib.Path, use open() to copy
+        with open(source, 'rb') as src, open(dest, 'wb') as dst:
+            shutil.copyfileobj(src, dst)
