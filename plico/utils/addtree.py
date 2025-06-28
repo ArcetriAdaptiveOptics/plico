@@ -1,6 +1,5 @@
 import os
 import shutil
-import importlib.resources.abc
 
 
 def mkdirp(dirname):
