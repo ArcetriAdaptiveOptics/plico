@@ -4,7 +4,6 @@ import os
 import re
 import configparser
 import appdirs
-from pkg_resources import resource_filename
 from plico.utils.calibration_installer import CalibrationInstaller
 from plico.utils.addtree import mkdirp
 

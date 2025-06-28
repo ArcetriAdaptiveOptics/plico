@@ -1,33 +1,25 @@
 import os
-import appdirs
-from pkg_resources import Requirement, resource_filename
+import importlib.resources
 from plico.utils.constants import Constants
 from plico.utils.addtree import addtree, mkdirp
-
-
-
-
-__version__= "$Id: calibration_installer.py 50 2018-04-26 21:42:20Z lbusoni $"
-
 
 
 class CalibrationInstaller():
 
     def __init__(self, appDirs, packageName, src=None, dest=None):
         if src is None:
-            self._sourcePath= self._getCalibPathInPackage(packageName)
+            self._sourcePath = self._getCalibPathInPackage(packageName)
         else:
-            self._sourcePath= src
+            self._sourcePath = src
         if dest is None:
-            self._destPath= self._getDestinationPathFromAppDirs(appDirs)
+            self._destPath = self._getDestinationPathFromAppDirs(appDirs)
         else:
-            self._destPath= dest
+            self._destPath = dest
 
 
     def _getDestinationPathFromAppDirs(self, appDirs):
-        calibFolderBaseName= 'calib'
-        return os.path.join(appDirs.user_data_dir,
-                            calibFolderBaseName)
+        calibFolderBaseName = 'calib'
+        return os.path.join(appDirs.user_data_dir, calibFolderBaseName)
 
 
     def getCalibrationFolderPath(self):
@@ -43,8 +35,9 @@ class CalibrationInstaller():
 
 
     def _getCalibPathInPackage(self, packageName):
-        return resource_filename(Requirement(packageName),
-                                 "%s/calib" % packageName)
+        # Usa importlib.resources per trovare la directory calib nel package
+        # Restituisce un pathlib.Path
+        return importlib.resources.files(packageName).joinpath('calib')
 
 
     def installCalibrationFilesFromPackage(self):
