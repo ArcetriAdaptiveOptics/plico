@@ -274,3 +274,7 @@ class ZmqRemoteProcedureCall(AbstractRemoteProcedureCall):
                 return s
         except Exception as e:
             return f"<unprintable args: {e}>"
+
+    def terminate(self):
+        """Explicitly terminate the ZeroMQ context."""
+        self._context.term()

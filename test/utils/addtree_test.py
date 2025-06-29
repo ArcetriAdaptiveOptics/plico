@@ -5,7 +5,6 @@ import shutil
 import os
 from plico.utils.addtree import addtree
 
-__version__ = "$Id: addtree_test.py 26 2018-01-26 19:06:25Z lbusoni $"
 
 
 class Test(unittest.TestCase):
